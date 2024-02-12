@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -16,8 +17,16 @@ class GameFactory extends Factory
      */
     public function definition(): array
     {
+        $dice1 = $this->faker->numberBetween(1,6);
+        $dice2 = $this->faker->numberBetween(1,6);
+        $totalSum = $dice1 + $dice2;
+        
         return [
-            //
+            'user_id' => User::factory(),
+                'dice1' =>  $dice1,
+                'dice2' =>  $dice2,
+                'totalSum' => $dice1 + $dice2,
+                'win' => ($totalSum == 7 ? true : false),
         ];
     }
 }
