@@ -30,7 +30,9 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/logout', [UserController::class, 'logout']) ->name('logout');
 
 
-    Route::middleware(['role:admin'])->group(function () {
+
+
+/*     Route::middleware(['role:admin'])->group(function () {
         //Route::post('/assign-role', [UserController::class, 'assignRoleUser']);
         Route::get('/players', [UserController::class, 'getPlayerList'])->name('getPlayerList'); // Returns the list of all players with their average success percentage
         Route::get('/players/ranking', [UserController::class, 'getAverageSuccessPercentage']) ->name('getAverageSuccessPercentage'); // Returns the average ranking of all players
@@ -42,5 +44,5 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/players/{id}/games', [GameController::class, 'playGame']) ->name('playGame'); // A specific player makes a dice roll
         Route::delete('/players/{id}/games', [GameController::class, 'deleteGames']) ->name('deleteGames');// Deletes the rolls of a player
         Route::get('/players/{id}/games', [GameController::class, 'getPlayerGames']) ->name('getPlayerGames'); // Returns the list of rolls for a player
-    });
+    }); */
 });
