@@ -50,4 +50,16 @@ class GameController extends Controller
         return response()->json(['message' => 'Games deleted successfully'],200);
     }
 
+    public function getPlayerGames($id){
+        $user = User::findOrFail($id);
+
+        if ($user->id != $id) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $games = $user->games;
+
+        return response()->json([$games],200);
+    }
+
 }
