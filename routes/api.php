@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\GameController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +16,31 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+/* Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
+}); */
+
+
+
+Route::post('/players', [UserController::class, 'registerUser']) ->name('registerUser'); // Creates a player
+Route::post('/login', [UserController::class, 'login']) ->name('login');
+
+Route::middleware('auth:api')->group(function () {
+    Route::put('/players/{id}', [UserController::class, 'updateUser']) ->name('updateUser'); // Modifies the name of a player
+    Route::post('/logout', [UserController::class, 'logout']) ->name('logout');
+
+
+    Route::middleware(['role:admin'])->group(function () {
+        //Route::post('/assign-role', [UserController::class, 'assignRoleUser']);
+        Route::get('/players', [UserController::class, 'getPlayerList'])->name('getPlayerList'); // Returns the list of all players with their average success percentage
+        Route::get('/players/ranking', [UserController::class, 'getAverageSuccessPercentage']) ->name('getAverageSuccessPercentage'); // Returns the average ranking of all players
+        Route::get('/players/ranking/loser', [UserController::class, 'getWorstPlayer']) ->name('getWorstPlayer'); // Returns the player with the worst success percentage
+        Route::get('/players/ranking/winner', [UserController::class, 'getBestPlayer']) ->name('getBestPlayer'); // Returns the player with the best success percentage
+    });
+
+    Route::middleware('role:player')->group(function () {
+        Route::post('/players/{id}/games', [GameController::class, 'playGame']) ->name('playGame'); // A specific player makes a dice roll
+        Route::delete('/players/{id}/games', [GameController::class, 'deleteGames']) ->name('deleteGames');// Deletes the rolls of a player
+        Route::get('/players/{id}/games', [GameController::class, 'getPlayerGames']) ->name('getPlayerGames'); // Returns the list of rolls for a player
+    });
 });
