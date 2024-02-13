@@ -26,7 +26,7 @@ Route::post('/players', [UserController::class, 'registerUser']) ->name('registe
 Route::post('/login', [UserController::class, 'login']) ->name('login');
 
 Route::middleware('auth:api')->group(function () {
-    Route::put('/players/{id}', [UserController::class, 'updateUser']) ->name('updateUser'); // Modifies the name of a player
+    Route::put('/players/{id}', [UserController::class, 'updateUser']) ->name('updateUser')->middleware('can:updateUser'); // Modifies the name of a player
     Route::post('/logout', [UserController::class, 'logout']) ->name('logout');
 
 
@@ -43,6 +43,7 @@ Route::middleware('auth:api')->group(function () {
 
 /*     Route::middleware(['role:admin'])->group(function () {
         //Route::post('/assign-role', [UserController::class, 'assignRoleUser']);
+        Route::put('/players/{id}', [UserController::class, 'updateUser']) ->name('updateUser'); // Modifies the name of a player
         Route::get('/players', [UserController::class, 'getPlayerList'])->name('getPlayerList'); // Returns the list of all players with their average success percentage
         Route::get('/players/ranking', [UserController::class, 'getAverageSuccessPercentage']) ->name('getAverageSuccessPercentage'); // Returns the average ranking of all players
         Route::get('/players/ranking/loser', [UserController::class, 'getWorstPlayer']) ->name('getWorstPlayer'); // Returns the player with the worst success percentage
