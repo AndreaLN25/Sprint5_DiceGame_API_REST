@@ -131,6 +131,7 @@ class UserController extends Controller
         return response()->json(['average_success_rate_total_players' => $averageSuccessRateTotalPlayers, 'average_success_rate' => $averageSuccessRate]);
 
     }
+
     public function getWorstPlayer(){
         $players = User::all();
         $worstPlayer = null;
@@ -152,5 +153,28 @@ class UserController extends Controller
         }
     
         return response()->json(['worst_player' => $worstPlayer]);
+    }
+    
+    public function getBestPlayer(){
+        $players = User::all();
+        $bestPlayer = null;
+        $highestSuccessRate = 0; 
+
+        foreach ($players as $player) {
+            $totalGames = $player->games()->count();
+            $wins = $player->games()->where('win', true)->count();
+            $successRate = ($totalGames > 0) ? ($wins / $totalGames) * 100 : 0;
+    
+            if ($successRate > $highestSuccessRate) {
+                $highestSuccessRate = $successRate;
+                $bestPlayer = [
+                    'name' => $player->name,
+                    'average_success_rate' => $successRate,
+                    'total_games' => $totalGames,
+                ];
+            }
+        }
+    
+        return response()->json(['best_player' => $bestPlayer]);
     }
 }
