@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Game;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -10,7 +11,9 @@ class GameController extends Controller
 {
     public function playGame(Request $request, $id){
 
-        $user = Auth::user();
+        //$user = Auth::user();
+        $user = User::findOrFail($id);
+        
         if ($user->id != $id) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
@@ -33,6 +36,18 @@ class GameController extends Controller
 
         return response()->json(['game' => $game, 'success_rate' => $successRate], 201);
     
+    }
+
+    public function deleteGames($id){
+        $user = User::findOrFail($id);
+
+        if ($user->id != $id) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $user->games()->delete();
+
+        return response()->json(['message' => 'Games deleted successfully'],200);
     }
 
 }
