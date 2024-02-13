@@ -80,4 +80,22 @@ class UserController extends Controller
         }
     }
 
+    public function getPlayerList(){
+        $players = User::all();
+        $playerList = [];
+
+        foreach ($players as $player) {
+            $totalGames = $player->games()->count();
+            $wins = $player->games()->where('win', true)->count();
+            $successRate = ($totalGames > 0) ? ($wins / $totalGames) * 100 : 0;
+    
+            $playerList[] = [
+                'name' => $player->name,
+                'success_rate' => $successRate,
+            ];
+    
+        }
+    
+        return response()->json(['players' => $playerList]);
+    }
 }
