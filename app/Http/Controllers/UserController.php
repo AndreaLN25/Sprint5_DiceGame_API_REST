@@ -17,17 +17,20 @@ class UserController extends Controller
                 //'name' => 'required|min:4',
                 'email' => 'required|email',
                 'password' => 'required|min:8',
+                //'role' => 'required|in:admin,player',   
             ]);
 
             $user = User::create([
                 'name' => $request->input('name', 'Anonymous'),
                 'email' => $request->email,
                 'password' => bcrypt($request->password)
-            ]);
+            ])->assignRole('player');
 
             if (!$user) {
                 throw new \Exception('Error creating user');
             }
+
+            //$user->assignRole($request->role);
 
             $registerMessage ='Register completed';
 
@@ -66,115 +69,137 @@ class UserController extends Controller
 
     public function updateUser(Request $request, $id){
         try {
-            $userId = Auth::user()->id;
+            $user = User::findOrFail($id);
 
-            if ($userId != $id) {
+            if ($request->user()->hasRole('admin') || $user->id == $request->user()->id) {
+
+                $user->update(['name' => $request->name ?: 'Anonymous']);
+                return response()->json(['message' => 'User name updated successfully'], 200);
+
+            } else {
                 return response()->json(['error' => 'No permission to update.'], 403);
             }
-
-            User::where('id', $userId)->update(['name'=>$request->name ? $request->name : 'Anonymous']);
-            return response()->json(['message' => 'User name updated successfully'], 200);
 
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
-    public function getPlayerList(){
-        $players = User::all();
-        $playerList = [];
+    public function getPlayerList(Request $request){
+        if ($request->user()->hasRole('admin')) {
 
-        foreach ($players as $player) {
-            $totalGames = $player->games()->count();
-            $wins = $player->games()->where('win', true)->count();
-            $successRate = ($totalGames > 0) ? ($wins / $totalGames) * 100 : 0;
-    
-            $playerList[] = [
-                'name' => $player->name,
-                'success_rate' => $successRate,
-            ];
-    
+            $players = User::all();
+            $playerList = [];
+
+            foreach ($players as $player) {
+                $totalGames = $player->games()->count();
+                $wins = $player->games()->where('win', true)->count();
+                $successRate = ($totalGames > 0) ? ($wins / $totalGames) * 100 : 0;
+        
+                $playerList[] = [
+                    'name' => $player->name,
+                    'success_rate' => $successRate,
+                ];
+            }
+            return response()->json(['players' => $playerList]);
+
+        }else{
+            return response()->json(['message' => 'You are not authorized to get the player list.'], 403);
         }
-    
-        return response()->json(['players' => $playerList]);
     }
 
-    public function getAverageSuccessPercentage(){
-        $players = User::all();
-        $totalPlayers = count($players);
-        $totalSuccessRate = 0;
-        $averageSuccessRateTotalPlayers = [];
-    
-        foreach ($players as $player) {
-            $totalGames = $player->games()->count();
-            $wins = $player->games()->where('win', true)->count();
-            $successRate = ($totalGames > 0) ? ($wins / $totalGames) * 100 : 0;
-            $totalSuccessRate += $successRate;
+    public function getAverageSuccessPercentage(Request $request){
+        if ($request->user()->hasRole('admin') || $request->user()->hasRole('player')) {
+
+            $players = User::all();
+            $totalPlayers = count($players);
+            $totalSuccessRate = 0;
+            $averageSuccessRateTotalPlayers = [];
+        
+            foreach ($players as $player) {
+                $totalGames = $player->games()->count();
+                $wins = $player->games()->where('win', true)->count();
+                $successRate = ($totalGames > 0) ? ($wins / $totalGames) * 100 : 0;
+                $totalSuccessRate += $successRate;
 
 
-            $averageSuccessRateTotalPlayers[] = [
-                'name' => $player->name,
-                'average_success_rate' => $successRate,
-                'total_games' => $totalGames,
-            ];
-        }
-
-        $averageSuccessRate = ($totalPlayers > 0) ? $totalSuccessRate / $totalPlayers : 0;
-
-
-        $averageSuccessRateTotalPlayers = collect($averageSuccessRateTotalPlayers)
-        ->sortBy('total_games')
-        ->sortByDesc('average_success_rate')
-        ->values()
-        ->all();
-
-        return response()->json(['average_success_rate_total_players' => $averageSuccessRateTotalPlayers, 'average_success_rate' => $averageSuccessRate]);
-
-    }
-
-    public function getWorstPlayer(){
-        $players = User::all();
-        $worstPlayer = null;
-        $lowestSuccessRate = 100; 
-    
-        foreach ($players as $player) {
-            $totalGames = $player->games()->count();
-            $wins = $player->games()->where('win', true)->count();
-            $successRate = ($totalGames > 0) ? ($wins / $totalGames) * 100 : 0;
-    
-            if ($successRate < $lowestSuccessRate) {
-                $lowestSuccessRate = $successRate;
-                $worstPlayer = [
+                $averageSuccessRateTotalPlayers[] = [
                     'name' => $player->name,
                     'average_success_rate' => $successRate,
                     'total_games' => $totalGames,
                 ];
             }
+
+            $averageSuccessRate = ($totalPlayers > 0) ? $totalSuccessRate / $totalPlayers : 0;
+
+
+            $averageSuccessRateTotalPlayers = collect($averageSuccessRateTotalPlayers)
+            ->sortBy('total_games')
+            ->sortByDesc('average_success_rate')
+            ->values()
+            ->all();
+
+            return response()->json(['Ranking by average_success_rate_total_players' => $averageSuccessRateTotalPlayers, 'average_success_rate' => $averageSuccessRate]);
+        
+        } else {
+            return response()->json(['message' => 'You are not authorized to get the average success percentage.'], 403);
         }
-    
-        return response()->json(['worst_player' => $worstPlayer]);
+    }
+
+    public function getWorstPlayer(Request $request){
+        if ($request->user()->hasRole('admin')) {
+
+            $players = User::all();
+            $worstPlayer = null;
+            $lowestSuccessRate = 100; 
+        
+            foreach ($players as $player) {
+                $totalGames = $player->games()->count();
+                $wins = $player->games()->where('win', true)->count();
+                $successRate = ($totalGames > 0) ? ($wins / $totalGames) * 100 : 0;
+        
+                if ($successRate < $lowestSuccessRate) {
+                    $lowestSuccessRate = $successRate;
+                    $worstPlayer = [
+                        'name' => $player->name,
+                        'average_success_rate' => $successRate,
+                        'total_games' => $totalGames,
+                    ];
+                }
+            }
+        
+            return response()->json(['worst_player' => $worstPlayer]);
+
+        } else {
+            return response()->json(['message' => 'You are not authorized to get the worst player.'], 403);
+        }
     }
     
-    public function getBestPlayer(){
-        $players = User::all();
-        $bestPlayer = null;
-        $highestSuccessRate = 0; 
+    public function getBestPlayer(Request $request){
+        if ($request->user()->hasRole('admin')) {
 
-        foreach ($players as $player) {
-            $totalGames = $player->games()->count();
-            $wins = $player->games()->where('win', true)->count();
-            $successRate = ($totalGames > 0) ? ($wins / $totalGames) * 100 : 0;
-    
-            if ($successRate > $highestSuccessRate) {
-                $highestSuccessRate = $successRate;
-                $bestPlayer = [
-                    'name' => $player->name,
-                    'average_success_rate' => $successRate,
-                    'total_games' => $totalGames,
-                ];
+            $players = User::all();
+            $bestPlayer = null;
+            $highestSuccessRate = 0; 
+
+            foreach ($players as $player) {
+                $totalGames = $player->games()->count();
+                $wins = $player->games()->where('win', true)->count();
+                $successRate = ($totalGames > 0) ? ($wins / $totalGames) * 100 : 0;
+        
+                if ($successRate > $highestSuccessRate) {
+                    $highestSuccessRate = $successRate;
+                    $bestPlayer = [
+                        'name' => $player->name,
+                        'average_success_rate' => $successRate,
+                        'total_games' => $totalGames,
+                    ];
+                }
             }
+        
+            return response()->json(['best_player' => $bestPlayer]);
+        }else {
+        return response()->json(['message' => 'You are not authorized to get the best player.'], 403);
         }
-    
-        return response()->json(['best_player' => $bestPlayer]);
     }
 }
