@@ -29,8 +29,9 @@ Route::middleware('auth:api')->group(function () {
     Route::put('/players/{id}', [UserController::class, 'updateUser']) ->name('updateUser'); // Modifies the name of a player
     Route::post('/logout', [UserController::class, 'logout']) ->name('logout');
 
-    
+
     Route::get('/players', [UserController::class, 'getPlayerList'])->name('getPlayerList')->middleware('auth:api'); // Returns the list of all players with their average success percentage
+    Route::post('/players/{id}/games', [GameController::class, 'playGame']) ->name('playGame')->middleware('auth:api'); // A specific player makes a dice roll
 
 
 
