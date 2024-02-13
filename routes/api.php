@@ -26,23 +26,24 @@ Route::post('/players', [UserController::class, 'registerUser']) ->name('registe
 Route::post('/login', [UserController::class, 'login']) ->name('login');
 
 Route::middleware('auth:api')->group(function () {
-    Route::put('/players/{id}', [UserController::class, 'updateUser']) ->name('updateUser'); // Modifies the name of a player
+    Route::put('/players/{id}', [UserController::class, 'updateUser']) ->name('updateUser')->middleware('can:updateUser'); // Modifies the name of a player
     Route::post('/logout', [UserController::class, 'logout']) ->name('logout');
 
 
-    Route::get('/players', [UserController::class, 'getPlayerList'])->name('getPlayerList')->middleware('auth:api'); // Returns the list of all players with their average success percentage
-    Route::post('/players/{id}/games', [GameController::class, 'playGame']) ->name('playGame')->middleware('auth:api'); // A specific player makes a dice roll
-    Route::delete('/players/{id}/games', [GameController::class, 'deleteGames']) ->name('deleteGames')->middleware('auth:api');// Deletes the rolls of a player
-    Route::get('/players/{id}/games', [GameController::class, 'getPlayerGames']) ->name('getPlayerGames')->middleware('auth:api'); // Returns the list of rolls for a player
-    Route::get('/players/ranking', [UserController::class, 'getAverageSuccessPercentage']) ->name('getAverageSuccessPercentage')->middleware('auth:api'); // Returns the average ranking of all players
-    Route::get('/players/ranking/loser', [UserController::class, 'getWorstPlayer']) ->name('getWorstPlayer')->middleware('auth:api'); // Returns the player with the worst success percentage
-    Route::get('/players/ranking/winner', [UserController::class, 'getBestPlayer']) ->name('getBestPlayer'); // Returns the player with the best success percentage
+    Route::get('/players', [UserController::class, 'getPlayerList'])->name('getPlayerList')->middleware('can:getPlayerList'); // Returns the list of all players with their average success percentage
+    Route::post('/players/{id}/games', [GameController::class, 'playGame']) ->name('playGame')->middleware('can:playGame'); // A specific player makes a dice roll
+    Route::delete('/players/{id}/games', [GameController::class, 'deleteGames']) ->name('deleteGames')->middleware('can:deleteGames');// Deletes the rolls of a player
+    Route::get('/players/{id}/games', [GameController::class, 'getPlayerGames']) ->name('getPlayerGames')->middleware('can:getPlayerGames'); // Returns the list of rolls for a player
+    Route::get('/players/ranking', [UserController::class, 'getAverageSuccessPercentage']) ->name('getAverageSuccessPercentage')->middleware('can:getAverageSuccessPercentage'); // Returns the average ranking of all players
+    Route::get('/players/ranking/loser', [UserController::class, 'getWorstPlayer']) ->name('getWorstPlayer')->middleware('can:getWorstPlayer'); // Returns the player with the worst success percentage
+    Route::get('/players/ranking/winner', [UserController::class, 'getBestPlayer']) ->name('getBestPlayer')->middleware('can:getBestPlayer'); // Returns the player with the best success percentage
 
 
 
 
 /*     Route::middleware(['role:admin'])->group(function () {
         //Route::post('/assign-role', [UserController::class, 'assignRoleUser']);
+        Route::put('/players/{id}', [UserController::class, 'updateUser']) ->name('updateUser'); // Modifies the name of a player
         Route::get('/players', [UserController::class, 'getPlayerList'])->name('getPlayerList'); // Returns the list of all players with their average success percentage
         Route::get('/players/ranking', [UserController::class, 'getAverageSuccessPercentage']) ->name('getAverageSuccessPercentage'); // Returns the average ranking of all players
         Route::get('/players/ranking/loser', [UserController::class, 'getWorstPlayer']) ->name('getWorstPlayer'); // Returns the player with the worst success percentage
