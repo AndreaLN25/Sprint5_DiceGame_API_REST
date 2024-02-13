@@ -34,6 +34,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/players/{id}/games', [GameController::class, 'playGame']) ->name('playGame')->middleware('auth:api'); // A specific player makes a dice roll
     Route::delete('/players/{id}/games', [GameController::class, 'deleteGames']) ->name('deleteGames')->middleware('auth:api');// Deletes the rolls of a player
     Route::get('/players/{id}/games', [GameController::class, 'getPlayerGames']) ->name('getPlayerGames')->middleware('auth:api'); // Returns the list of rolls for a player
+    Route::get('/players/ranking', [UserController::class, 'getAverageSuccessPercentage']) ->name('getAverageSuccessPercentage')->middleware('auth:api'); // Returns the average ranking of all players
 
 
 

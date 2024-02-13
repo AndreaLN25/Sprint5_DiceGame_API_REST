@@ -98,4 +98,37 @@ class UserController extends Controller
     
         return response()->json(['players' => $playerList]);
     }
+
+    public function getAverageSuccessPercentage(){
+        $players = User::all();
+        $totalPlayers = count($players);
+        $totalSuccessRate = 0;
+        $averageSuccessRateTotalPlayers = [];
+    
+        foreach ($players as $player) {
+            $totalGames = $player->games()->count();
+            $wins = $player->games()->where('win', true)->count();
+            $successRate = ($totalGames > 0) ? ($wins / $totalGames) * 100 : 0;
+            $totalSuccessRate += $successRate;
+
+
+            $averageSuccessRateTotalPlayers[] = [
+                'name' => $player->name,
+                'average_success_rate' => $successRate,
+                'total_games' => $totalGames,
+            ];
+        }
+
+        $averageSuccessRate = ($totalPlayers > 0) ? $totalSuccessRate / $totalPlayers : 0;
+
+
+        $averageSuccessRateTotalPlayers = collect($averageSuccessRateTotalPlayers)
+        ->sortBy('total_games')
+        ->sortByDesc('average_success_rate')
+        ->values()
+        ->all();
+
+        return response()->json(['average_success_rate_total_players' => $averageSuccessRateTotalPlayers, 'average_success_rate' => $averageSuccessRate]);
+
+    }
 }
