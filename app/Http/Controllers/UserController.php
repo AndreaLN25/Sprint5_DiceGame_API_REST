@@ -18,7 +18,14 @@ class UserController extends Controller
                 'email' => 'required|email',
                 'password' => 'required|min:8',
                 //'role' => 'required|in:admin,player',   
-            ]);
+            ],
+            [
+                'email.required' => 'Email is required.',
+                'email.email' => 'Invalid email format.',
+                'password.required' => 'Password is required.',
+                'password.min' => 'Password must be at least 8 characters long.',
+            ]
+            );
 
             $user = User::create([
                 'name' => $request->input('name', 'Anonymous'),
@@ -71,7 +78,7 @@ class UserController extends Controller
         try {
             $user = User::findOrFail($id);
 
-            if ($request->user()->hasRole('admin')) {
+            if ($request->user()->hasRole('admin') || $user->id == $request->user()->id) {
 
                 $user->update(['name' => $request->name ?: 'Anonymous']);
                 return response()->json(['message' => 'User name updated successfully'], 200);
