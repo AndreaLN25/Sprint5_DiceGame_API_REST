@@ -35,7 +35,7 @@ class GameController extends Controller
             return response()->json(['game' => $game, 'success_rate' => $successRate], 201);
 
         } else {
-            return response()->json(['error' => 'Unauthorized'], 403);
+            return response()->json(['error' => 'No permission to make a roll.'], 403);
         }
     
     }
@@ -49,7 +49,7 @@ class GameController extends Controller
             return response()->json(['message' => 'Games deleted successfully'],200);
 
         } else {
-            return response()->json(['error' => 'Unauthorized'], 403);
+            return response()->json(['error' => 'No permission to delete. '], 403);
         }
     }
 
@@ -62,7 +62,7 @@ class GameController extends Controller
             return response()->json([$games],200);
             
         } else {
-            return response()->json(['error' => 'Unauthorized'], 403);
+            return response()->json(['error' => 'No permission to get the list of rolls.'], 403);
         }
         
     }

@@ -111,7 +111,7 @@ class UserController extends Controller
             return response()->json(['players' => $playerList],200);
 
         }else{
-            return response()->json(['message' => 'You are not authorized to get the player list.'], 403);
+            return response()->json(['message' => 'No permission to get the player list.'], 403);
         }
     }
 
@@ -149,7 +149,7 @@ class UserController extends Controller
             return response()->json(['Ranking by average_success_rate_total_players' => $averageSuccessRateTotalPlayers, 'average_success_rate' => $averageSuccessRate],200);
         
         } else {
-            return response()->json(['message' => 'You are not authorized to get the average success percentage.'], 403);
+            return response()->json(['message' => 'No permission to get the average success percentage.'], 403);
         }
     }
 
@@ -178,7 +178,7 @@ class UserController extends Controller
             return response()->json(['worst_player' => $worstPlayer],200);
 
         } else {
-            return response()->json(['message' => 'You are not authorized to get the worst player.'], 403);
+            return response()->json(['message' => 'No permission to get the worst player.'], 403);
         }
     }
     
@@ -206,7 +206,7 @@ class UserController extends Controller
         
             return response()->json(['best_player' => $bestPlayer],200);
         }else {
-        return response()->json(['message' => 'You are not authorized to get the best player.'], 403);
+        return response()->json(['message' => 'No permission to get the best player.'], 403);
         }
     }
 }
