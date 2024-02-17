@@ -23,16 +23,14 @@ class GetWorstPlayerTest extends TestCase
 /*     public function setUp(): void {
         parent::setUp();
 
-        // Ejecutar migraciones y seeders
         Artisan::call('migrate');
         Artisan::call('db:seed', ['--class' => 'DatabaseSeeder']);
     } */
 
-    // Test para verificar que un administrador puede obtener al peor jugador
     public function testAdminGetWorstPlayer(){
         $admin = User::where('email', 'admin1@gmail.com')->first();
 
-        $response = $this->actingAs($admin)->getJson('/api/players/ranking/winner');
+        $response = $this->actingAs($admin)->getJson('/api/players/ranking/loser');
 
         $response->assertStatus(200);
     }
@@ -40,13 +38,13 @@ class GetWorstPlayerTest extends TestCase
     public function testNonAdminCantGetWorstPlayer(){
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->getJson('/api/players/ranking/winner');
+        $response = $this->actingAs($user)->getJson('/api/players/ranking/loser');
 
         $response->assertStatus(403);
     }
 
     public function testUnauthorizedResponseWhenNonAdminAttemptsToGetWorstPlayer(){
-        $response = $this->getJson('/api/players/ranking/winner');
+        $response = $this->getJson('/api/players/ranking/loser');
 
         $response->assertStatus(401);
     }
