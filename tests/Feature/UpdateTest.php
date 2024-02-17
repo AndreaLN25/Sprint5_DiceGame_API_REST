@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Artisan;
 use Tests\TestCase;
 
 class UpdateTest extends TestCase
@@ -19,10 +20,15 @@ class UpdateTest extends TestCase
         $response->assertStatus(200);
     } */
 
-    public function testAdminCanUpdateUser(){
-        $admin = User::factory()->create();
-        $admin->assignRole('admin');
+/*     protected function setUp(): void{
+        parent::setUp();
 
+        Artisan::call('migrate');
+        Artisan::call('db:seed', ['--class' => 'DatabaseSeeder']);
+    } */
+    public function testAdminCanUpdateUser()
+    {
+        $admin = User::where('email', 'admin1@gmail.com')->first();
         $userToUpdate = User::factory()->create(['name' => 'Name1']);
 
         $response = $this->actingAs($admin)->putJson("/api/players/{$userToUpdate->id}", ['name' => 'Name2']);
@@ -38,7 +44,7 @@ class UpdateTest extends TestCase
         $response = $this->actingAs($nonAdmin)->putJson("/api/players/{$userToUpdate->id}", ['name' => 'Name2']);
 
         $response->assertStatus(403);
-        $this->assertEquals('Name2', $userToUpdate->fresh()->name);
+        $this->assertEquals('Name1', $userToUpdate->fresh()->name);
     }
 
     public function testUserCanUpdateOwnProfile(){
