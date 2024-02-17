@@ -21,7 +21,7 @@ class RegisterTest extends TestCase
     public function testUserRegister()
     {
         $userData = [
-            'email' => 'usertest01@gmail.com',
+            'email' => 'userregister@gmail.com',
             'password' => '12345678',
         ];
 
@@ -43,7 +43,7 @@ class RegisterTest extends TestCase
 
     public function testUserRegisterWithoutPassword(){
         $userData = [
-            'email' => 'usertest1@gmail.com',
+            'email' => 'userregisternopassword@gmail.com',
             //'password' => '12345678',
         ];
 
@@ -55,7 +55,7 @@ class RegisterTest extends TestCase
     public function testRegisterUserWithoutName()
     {
         $userData = [
-            'email' => 'test0@gmail.com',
+            'email' => 'registernoname@gmail.com',
             'password' => '12345678'
         ];
 
@@ -68,13 +68,13 @@ class RegisterTest extends TestCase
     public function testRegisterUserWithDuplicateEmail()
     {
         User::factory()->create([
-            'email' => 'test1@gmail.com',
+            'email' => 'duplicatename@gmail.com',
             'password' => bcrypt('12345678'),
         ]);
 
         $userData = [
-            'name' => 'TestUser',
-            'email' => 'test1@gmail.com',
+            'name' => 'Duplicatename',
+            'email' => 'duplicatename@gmail.com',
             'password' => '12345678'
         ];
 
@@ -82,7 +82,7 @@ class RegisterTest extends TestCase
 
         $response->assertStatus(500);
 
-        $this->assertEquals(1, User::where('email', 'test1@gmail.com')->count());
+        $this->assertEquals(1, User::where('email', 'duplicatename@gmail.com')->count());
     }
 
 
