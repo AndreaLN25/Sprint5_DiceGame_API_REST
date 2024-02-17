@@ -26,8 +26,7 @@ class UpdateTest extends TestCase
         Artisan::call('migrate');
         Artisan::call('db:seed', ['--class' => 'DatabaseSeeder']);
     } */
-    public function testAdminCanUpdateUser()
-    {
+    public function testAdminCanUpdateUser(){
         $admin = User::where('email', 'admin1@gmail.com')->first();
         $userToUpdate = User::factory()->create(['name' => 'Name1']);
 

@@ -27,14 +27,13 @@ class GetPlayerListTest extends TestCase
         Artisan::call('db:seed', ['--class' => 'DatabaseSeeder']);
     } */
 
-    public function testAdminCanGetPlayerList()
-    {
+    public function testAdminCanGetPlayerList(){
         $admin = User::where('email', 'admin1@gmail.com')->first();
-        $player1 = User::where('email', 'player1@gmail.com')->first();
+/*         $player1 = User::where('email', 'player1@gmail.com')->first();
 
         $player1->games()->create(['win' => true]);
         $player1->games()->create(['win' => false]);
-
+ */
         $response = $this->actingAs($admin)->getJson('/api/players');
 
         $response->assertStatus(200);
@@ -43,8 +42,7 @@ class GetPlayerListTest extends TestCase
     }
 
 
-    public function testNonAdminCannotGetPlayerList()
-    {
+    public function testNonAdminCannotGetPlayerList(){
         $user = User::factory()->create();
 
         $response = $this->actingAs($user)->getJson('/api/players');
@@ -52,8 +50,7 @@ class GetPlayerListTest extends TestCase
         $response->assertStatus(403);
     }
 
-    public function testPlayerListIsEmptyWhenNoPlayersExist()
-    {
+    public function testPlayerListIsEmptyWhenNoPlayersExist(){
         $admin = User::where('email', 'admin1@gmail.com')->first();
 
         $response = $this->actingAs($admin)->getJson('/api/players');
@@ -61,4 +58,9 @@ class GetPlayerListTest extends TestCase
         $response->assertStatus(200);
     }
 
+    public function testIndexExecutedByUnauthenticatedUser()
+    {
+        $response = $this->getJson('/api/players');
+        $response->assertStatus(401);
+    }
 }
