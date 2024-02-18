@@ -10,6 +10,8 @@ use Tests\TestCase;
 
 class rankingTest extends TestCase
 {
+    use RefreshDatabase;
+
     /**
      * A basic feature test example.
      */
@@ -20,12 +22,12 @@ class rankingTest extends TestCase
         $response->assertStatus(200);
     } */
 
-/*     public function setUp(): void{
+    public function setUp(): void{
         parent::setUp();
 
         Artisan::call('migrate');
         Artisan::call('db:seed', ['--class' => 'DatabaseSeeder']);
-    } */
+    }
 
     public function testRankingAdmin(){
     $admin = User::where('email', 'admin1@gmail.com')->first();

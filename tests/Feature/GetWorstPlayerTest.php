@@ -10,6 +10,8 @@ use Tests\TestCase;
 
 class GetWorstPlayerTest extends TestCase
 {
+    use RefreshDatabase;
+
     /**
      * A basic feature test example.
      */
@@ -20,12 +22,12 @@ class GetWorstPlayerTest extends TestCase
         $response->assertStatus(200);
     } */
 
-/*     public function setUp(): void {
+    public function setUp(): void {
         parent::setUp();
 
         Artisan::call('migrate');
         Artisan::call('db:seed', ['--class' => 'DatabaseSeeder']);
-    } */
+    }
 
     public function testAdminGetWorstPlayer(){
         $admin = User::where('email', 'admin1@gmail.com')->first();

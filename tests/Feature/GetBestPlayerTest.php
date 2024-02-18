@@ -5,10 +5,13 @@ namespace Tests\Feature;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Artisan;
 use Tests\TestCase;
 
 class GetBestPlayerTest extends TestCase
 {
+    use RefreshDatabase;
+
     /**
      * A basic feature test example.
      */
@@ -19,13 +22,12 @@ class GetBestPlayerTest extends TestCase
         $response->assertStatus(200);
     } */
 
-    /*     public function setUp(): void {
+        public function setUp(): void {
         parent::setUp();
 
-        // Ejecutar migraciones y seeders
         Artisan::call('migrate');
         Artisan::call('db:seed', ['--class' => 'DatabaseSeeder']);
-    } */
+    }
 
     public function testAdminGetBestPlayer(){
         $admin = User::where('email', 'admin1@gmail.com')->first();

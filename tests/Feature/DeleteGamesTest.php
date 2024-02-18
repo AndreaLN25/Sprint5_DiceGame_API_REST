@@ -9,6 +9,8 @@ use Tests\TestCase;
 
 class DeleteGamesTest extends TestCase
 {
+    use RefreshDatabase;
+
     /**
      * A basic feature test example.
      */

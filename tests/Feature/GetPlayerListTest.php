@@ -10,6 +10,8 @@ use Tests\TestCase;
 
 class GetPlayerListTest extends TestCase
 {
+    use RefreshDatabase;
+
     /**
      * A basic feature test example.
      */
@@ -20,12 +22,12 @@ class GetPlayerListTest extends TestCase
         $response->assertStatus(200);
     } */
 
-/*     protected function setUp(): void{
+    protected function setUp(): void{
         parent::setUp();
 
         Artisan::call('migrate');
         Artisan::call('db:seed', ['--class' => 'DatabaseSeeder']);
-    } */
+    }
 
     public function testAdminCanGetPlayerList(){
         $admin = User::where('email', 'admin1@gmail.com')->first();
