@@ -40,4 +40,14 @@ class PlayGameTest extends TestCase
 
         $response->assertStatus(401);
     }
+    public function testRollExecutedByAuthenticatedPlayerTryingToAssignRollToAnotherPlayer(){
+        $player1 = User::factory()->create();
+        $player2 = User::factory()->create();
+
+        $this->actingAs($player1);
+
+        $response = $this->postJson("/api/players/{$player2->id}/games");
+
+        $response->assertStatus(403);
+    }
 }
