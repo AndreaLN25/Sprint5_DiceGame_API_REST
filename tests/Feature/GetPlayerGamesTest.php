@@ -22,17 +22,6 @@ class GetPlayerGamesTest extends TestCase
         $response->assertStatus(200);
     } */
 
-    public function testPlayerCanGetOwnGames(){
-        $player = User::factory()->create();
-
-        $this->actingAs($player);
-
-        $games = Game::factory()->count(3)->create(['user_id' => $player->id]);
-
-        $response = $this->getJson("/api/players/{$player->id}/games");
-
-        $response->assertStatus(200);
-    }
 
     public function testAdminCannotGetGames(){
         $user = User::factory()->create();

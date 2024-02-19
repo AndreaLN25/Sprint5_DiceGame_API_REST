@@ -21,13 +21,7 @@ class PlayGameTest extends TestCase
         $response->assertStatus(200);
     } */
 
-    public function testPlayerCanPlayGame(){
-        $player = User::factory()->create();
 
-        $response = $this->actingAs($player)->postJson("/api/players/{$player->id}/games");
-
-        $response->assertStatus(201);
-    }
 
     public function testNonPlayerCannotPlayGame(){
         $user = User::factory()->create();

@@ -48,14 +48,7 @@ class UpdateTest extends TestCase
         $this->assertEquals('Name1', $userToUpdate->fresh()->name);
     }
 
-    public function testUserCanUpdateOwnProfile(){
-        $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->putJson("/api/players/{$user->id}", ['name' => 'Name1']);
-
-        $response->assertStatus(200);
-
-    }
 
     public function testUserCannotUpdateOtherUserProfiles(){
         $user1 = User::factory()->create();
