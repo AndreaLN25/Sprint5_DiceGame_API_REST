@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    
+
 
     public function registerUser(Request $request){
         try {
@@ -17,7 +17,7 @@ class UserController extends Controller
                 //'name' => 'required|min:4',
                 'email' => 'required|email',
                 'password' => 'required|min:8',
-                //'role' => 'required|in:admin,player',   
+                //'role' => 'required|in:admin,player',
             ],
             [
                 'email.required' => 'Email is required.',
@@ -62,10 +62,10 @@ class UserController extends Controller
 
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
-        } 
+        }
     }
 
-    public function logout(){ 
+    public function logout(){
         $user = Auth::user();
 
         if ($user) {
@@ -102,7 +102,7 @@ class UserController extends Controller
                 $totalGames = $player->games()->count();
                 $wins = $player->games()->where('win', true)->count();
                 $successRate = ($totalGames > 0) ? ($wins / $totalGames) * 100 : 0;
-        
+
                 $playerList[] = [
                     'name' => $player->name,
                     'success_rate' => $successRate,
@@ -122,7 +122,7 @@ class UserController extends Controller
             $totalPlayers = count($players);
             $totalSuccessRate = 0;
             $averageSuccessRateTotalPlayers = [];
-        
+
             foreach ($players as $player) {
                 $totalGames = $player->games()->count();
                 $wins = $player->games()->where('win', true)->count();
@@ -147,7 +147,7 @@ class UserController extends Controller
             ->all();
 
             return response()->json(['Ranking by average_success_rate_total_players' => $averageSuccessRateTotalPlayers, 'average_success_rate' => $averageSuccessRate],200);
-        
+
         } else {
             return response()->json(['message' => 'No permission to get the average success percentage.'], 403);
         }
@@ -158,13 +158,13 @@ class UserController extends Controller
 
             $players = User::all();
             $worstPlayer = null;
-            $lowestSuccessRate = 100; 
-        
+            $lowestSuccessRate = 100;
+
             foreach ($players as $player) {
                 $totalGames = $player->games()->count();
                 $wins = $player->games()->where('win', true)->count();
                 $successRate = ($totalGames > 0) ? ($wins / $totalGames) * 100 : 0;
-        
+
                 if ($successRate < $lowestSuccessRate) {
                     $lowestSuccessRate = $successRate;
                     $worstPlayer = [
@@ -174,26 +174,26 @@ class UserController extends Controller
                     ];
                 }
             }
-        
+
             return response()->json(['worst_player' => $worstPlayer],200);
 
         } else {
             return response()->json(['message' => 'No permission to get the worst player.'], 403);
         }
     }
-    
+
     public function getBestPlayer(Request $request){
         if ($request->user()->hasRole('admin')) {
 
             $players = User::all();
             $bestPlayer = null;
-            $highestSuccessRate = 0; 
+            $highestSuccessRate = 0;
 
             foreach ($players as $player) {
                 $totalGames = $player->games()->count();
                 $wins = $player->games()->where('win', true)->count();
                 $successRate = ($totalGames > 0) ? ($wins / $totalGames) * 100 : 0;
-        
+
                 if ($successRate > $highestSuccessRate) {
                     $highestSuccessRate = $successRate;
                     $bestPlayer = [
@@ -203,7 +203,7 @@ class UserController extends Controller
                     ];
                 }
             }
-        
+
             return response()->json(['best_player' => $bestPlayer],200);
         }else {
         return response()->json(['message' => 'No permission to get the best player.'], 403);
